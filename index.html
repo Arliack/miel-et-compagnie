@@ -73,8 +73,14 @@
     </div>
 
     <form id="checkout-form" class="checkout-form">
-      <label for="famille">Nom de la famille *</label>
-      <input type="text" id="famille" name="famille" required autocomplete="name">
+      <label for="nomEleve">Nom de famille de l'élève *</label>
+      <input type="text" id="nomEleve" name="nomEleve" required autocomplete="family-name">
+
+      <label for="prenomEleve">Prénom de l'élève *</label>
+      <input type="text" id="prenomEleve" name="prenomEleve" required autocomplete="given-name">
+
+      <label for="classe">Classe *</label>
+      <input type="text" id="classe" name="classe" required placeholder="ex: 6A">
 
       <label for="telephone">Téléphone *</label>
       <input type="tel" id="telephone" name="telephone" required autocomplete="tel">
@@ -112,6 +118,6 @@
   <p>Miel &amp; Ruches — produits proposés par deux apiculteurs partenaires du collège.</p>
 </footer>
 
-<script src="script.js?v=2"></script>
+<script src="script.js?v=3"></script>
 </body>
 </html>

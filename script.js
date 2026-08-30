@@ -285,13 +285,17 @@ async function validerCommande(event) {
   event.preventDefault();
   els.formError.classList.add("hidden");
 
-  const famille = document.getElementById("famille").value.trim();
+  const nomEleve = document.getElementById("nomEleve").value.trim();
+  const prenomEleve = document.getElementById("prenomEleve").value.trim();
+  const classe = document.getElementById("classe").value.trim();
   const telephone = document.getElementById("telephone").value.trim();
   const email = document.getElementById("email").value.trim();
   const ville = document.getElementById("ville").value.trim();
 
   const payload = {
-    famille,
+    nomEleve,
+    prenomEleve,
+    classe,
     telephone,
     email,
     ville,
