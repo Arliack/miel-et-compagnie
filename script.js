@@ -53,11 +53,7 @@ async function chargerProduits() {
 }
 
 function afficherProduits(liste) {
-  const parFournisseur = {};
-  liste.forEach((p) => {
-    if (!parFournisseur[p.fournisseur]) parFournisseur[p.fournisseur] = [];
-    parFournisseur[p.fournisseur].push(p);
-  });
+  const parFournisseur = grouperPar(liste, "fournisseur");
 
   els.container.innerHTML = "";
   Object.keys(parFournisseur).forEach((fournisseur) => {
@@ -69,14 +65,36 @@ function afficherProduits(liste) {
     titre.textContent = fournisseur;
     section.appendChild(titre);
 
-    const grid = document.createElement("div");
-    grid.className = "produits-grid";
+    const parCategorie = grouperPar(parFournisseur[fournisseur], "categorie");
+    Object.keys(parCategorie).forEach((categorie) => {
+      const sousSection = document.createElement("div");
+      sousSection.className = "categorie-section";
 
-    parFournisseur[fournisseur].forEach((p) => grid.appendChild(creerCarteProduit(p)));
+      const sousTitre = document.createElement("h3");
+      sousTitre.className = "categorie-title";
+      sousTitre.textContent = categorie;
+      sousSection.appendChild(sousTitre);
 
-    section.appendChild(grid);
+      const grid = document.createElement("div");
+      grid.className = "produits-grid";
+      parCategorie[categorie].forEach((p) => grid.appendChild(creerCarteProduit(p)));
+      sousSection.appendChild(grid);
+
+      section.appendChild(sousSection);
+    });
+
     els.container.appendChild(section);
   });
+}
+
+function grouperPar(liste, champ) {
+  const groupes = {};
+  liste.forEach((p) => {
+    const cle = p[champ] || "Autres";
+    if (!groupes[cle]) groupes[cle] = [];
+    groupes[cle].push(p);
+  });
+  return groupes;
 }
 
 function creerCarteProduit(produit) {
