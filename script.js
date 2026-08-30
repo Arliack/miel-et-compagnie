@@ -288,11 +288,13 @@ async function validerCommande(event) {
   const famille = document.getElementById("famille").value.trim();
   const telephone = document.getElementById("telephone").value.trim();
   const email = document.getElementById("email").value.trim();
+  const ville = document.getElementById("ville").value.trim();
 
   const payload = {
     famille,
     telephone,
     email,
+    ville,
     panier: lignesPanier().map((l) => ({ id: l.produit.id, quantite: l.quantite }))
   };
 
