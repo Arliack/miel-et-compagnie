@@ -3,6 +3,7 @@ const CART_STORAGE_KEY = "miel-ruches-panier";
 let produits = [];
 let panier = chargerPanier();
 let categorieActive = null;
+let cartesAffichees = {};
 
 const els = {
   loading: document.getElementById("produits-loading"),
@@ -96,6 +97,7 @@ function afficherProduits(liste) {
   const parFournisseur = grouperPar(listeFiltree, "fournisseur");
 
   els.container.innerHTML = "";
+  cartesAffichees = {};
   Object.keys(parFournisseur).forEach((fournisseur) => {
     const section = document.createElement("section");
     section.className = "fournisseur-section";
@@ -160,27 +162,51 @@ function creerCarteProduit(produit) {
     <div class="produit-desc">${escapeHtml(produit.description || "")}</div>
     <div class="produit-footer">
       <span class="produit-prix">${formaterPrix(produit.prix)}</span>
+      <div class="produit-controle"></div>
     </div>
   `;
 
-  const btn = document.createElement("button");
-  btn.className = "btn-add";
-  btn.type = "button";
-  btn.textContent = "Ajouter";
-  btn.addEventListener("click", () => {
-    ajouterAuPanier(produit);
-    btn.textContent = "Ajouté ✓";
-    btn.classList.add("added");
-    setTimeout(() => {
-      btn.textContent = "Ajouter";
-      btn.classList.remove("added");
-    }, 900);
-  });
-
-  body.querySelector(".produit-footer").appendChild(btn);
   card.appendChild(image);
   card.appendChild(body);
+
+  const controle = body.querySelector(".produit-controle");
+  cartesAffichees[produit.id] = { produit, controle };
+  actualiserControleCarte(produit.id);
+
   return card;
+}
+
+function actualiserControleCarte(id) {
+  const entree = cartesAffichees[id];
+  if (!entree) return;
+
+  const { produit, controle } = entree;
+  const quantite = panier[id] ? panier[id].quantite : 0;
+  controle.innerHTML = "";
+
+  if (quantite === 0) {
+    const btn = document.createElement("button");
+    btn.className = "btn-add";
+    btn.type = "button";
+    btn.textContent = "Ajouter";
+    btn.addEventListener("click", () => ajouterAuPanier(produit));
+    controle.appendChild(btn);
+  } else {
+    const wrap = document.createElement("div");
+    wrap.className = "qty-control";
+    wrap.innerHTML = `
+      <button type="button" data-action="moins">-</button>
+      <span>${quantite}</span>
+      <button type="button" data-action="plus">+</button>
+    `;
+    wrap.querySelector('[data-action="moins"]').addEventListener("click", () => changerQuantite(id, -1));
+    wrap.querySelector('[data-action="plus"]').addEventListener("click", () => changerQuantite(id, 1));
+    controle.appendChild(wrap);
+  }
+}
+
+function actualiserToutesLesCartes() {
+  Object.keys(cartesAffichees).forEach((id) => actualiserControleCarte(id));
 }
 
 function bindEvents() {
@@ -249,6 +275,7 @@ function totalPanier() {
 }
 
 function majAffichagePanier() {
+  actualiserToutesLesCartes();
   const lignes = lignesPanier();
   const nbArticles = lignes.reduce((s, l) => s + l.quantite, 0);
   const total = totalPanier();
