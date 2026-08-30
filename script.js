@@ -6,6 +6,7 @@ let categorieActive = null;
 let cartesAffichees = {};
 
 const els = {
+  siteNom: document.getElementById("site-nom"),
   loading: document.getElementById("produits-loading"),
   error: document.getElementById("produits-error"),
   container: document.getElementById("fournisseurs-container"),
@@ -46,6 +47,7 @@ async function chargerProduits() {
     const data = await res.json();
     if (!data.ok) throw new Error("Réponse invalide");
     produits = data.produits;
+    appliquerConfig(data.config);
     afficherFiltreCategories(produits);
     afficherProduits(produits);
     els.loading.classList.add("hidden");
@@ -54,6 +56,13 @@ async function chargerProduits() {
     els.error.classList.remove("hidden");
     console.error(err);
   }
+}
+
+function appliquerConfig(config) {
+  const nomBoutique = config && config.NOM_BOUTIQUE;
+  if (!nomBoutique) return;
+  if (els.siteNom) els.siteNom.textContent = nomBoutique;
+  document.title = `${nomBoutique} — Commande de produits d'apiculture`;
 }
 
 function afficherFiltreCategories(liste) {
