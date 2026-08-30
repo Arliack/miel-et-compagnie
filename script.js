@@ -2,11 +2,13 @@ const CART_STORAGE_KEY = "miel-ruches-panier";
 
 let produits = [];
 let panier = chargerPanier();
+let categorieActive = null;
 
 const els = {
   loading: document.getElementById("produits-loading"),
   error: document.getElementById("produits-error"),
   container: document.getElementById("fournisseurs-container"),
+  categoryFilter: document.getElementById("category-filter"),
   cartButton: document.getElementById("open-cart-btn"),
   cartCount: document.getElementById("cart-count"),
   cartTotalHeader: document.getElementById("cart-total-header"),
@@ -43,6 +45,7 @@ async function chargerProduits() {
     const data = await res.json();
     if (!data.ok) throw new Error("Réponse invalide");
     produits = data.produits;
+    afficherFiltreCategories(produits);
     afficherProduits(produits);
     els.loading.classList.add("hidden");
   } catch (err) {
@@ -52,8 +55,45 @@ async function chargerProduits() {
   }
 }
 
+function afficherFiltreCategories(liste) {
+  const categories = [];
+  liste.forEach((p) => {
+    const cat = p.categorie || "Autres";
+    if (!categories.includes(cat)) categories.push(cat);
+  });
+
+  if (categories.length < 2) {
+    els.categoryFilter.classList.add("hidden");
+    return;
+  }
+
+  els.categoryFilter.classList.remove("hidden");
+  els.categoryFilter.innerHTML = "";
+
+  const boutonToutes = creerBoutonFiltre("Toutes", null);
+  els.categoryFilter.appendChild(boutonToutes);
+  categories.forEach((cat) => {
+    els.categoryFilter.appendChild(creerBoutonFiltre(cat, cat));
+  });
+}
+
+function creerBoutonFiltre(label, valeur) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "filter-btn" + (categorieActive === valeur ? " active" : "");
+  btn.textContent = label;
+  btn.addEventListener("click", () => {
+    categorieActive = valeur;
+    [...els.categoryFilter.children].forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    afficherProduits(produits);
+  });
+  return btn;
+}
+
 function afficherProduits(liste) {
-  const parFournisseur = grouperPar(liste, "fournisseur");
+  const listeFiltree = categorieActive ? liste.filter((p) => (p.categorie || "Autres") === categorieActive) : liste;
+  const parFournisseur = grouperPar(listeFiltree, "fournisseur");
 
   els.container.innerHTML = "";
   Object.keys(parFournisseur).forEach((fournisseur) => {
@@ -290,7 +330,7 @@ async function validerCommande(event) {
   const classe = document.getElementById("classe").value.trim();
   const telephone = document.getElementById("telephone").value.trim();
   const email = document.getElementById("email").value.trim();
-  const ville = document.getElementById("ville").value.trim();
+  const commune = document.getElementById("commune").value.trim();
 
   const payload = {
     nomEleve,
@@ -298,7 +338,7 @@ async function validerCommande(event) {
     classe,
     telephone,
     email,
-    ville,
+    commune,
     panier: lignesPanier().map((l) => ({ id: l.produit.id, quantite: l.quantite }))
   };
 

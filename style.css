@@ -87,6 +87,40 @@ h1, h2, h3 {
 }
 .cart-button:hover { transform: translateY(-1px); }
 
+/* Filtre catégorie */
+.category-filter {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.category-filter::-webkit-scrollbar { height: 4px; }
+
+.filter-btn {
+  flex: none;
+  background: var(--cream-card);
+  color: var(--brown-dark);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.filter-btn:hover { border-color: var(--honey); }
+.filter-btn.active {
+  background: var(--honey-dark);
+  color: #fff8e7;
+  border-color: var(--honey-dark);
+}
+
 /* Main / produits */
 main {
   max-width: 1100px;
