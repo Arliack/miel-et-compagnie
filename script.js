@@ -148,17 +148,29 @@ function grouperPar(liste, champ) {
   return groupes;
 }
 
+function urlImageAffichable(url) {
+  if (!url) return "";
+  const idMatch = url.match(/\/file\/d\/([^/]+)/) || url.match(/[?&]id=([^&]+)/);
+  if (idMatch) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+  return url;
+}
+
 function creerCarteProduit(produit) {
   const card = document.createElement("article");
   card.className = "produit-card";
 
   const image = document.createElement("div");
   image.className = "produit-image";
-  if (produit.image) {
+  const urlImage = urlImageAffichable(produit.image);
+  if (urlImage) {
     const img = document.createElement("img");
-    img.src = produit.image;
+    img.src = urlImage;
     img.alt = produit.nom;
     img.loading = "lazy";
+    img.addEventListener("error", () => {
+      image.innerHTML = "";
+      image.textContent = "🍯";
+    });
     image.appendChild(img);
   } else {
     image.textContent = "🍯";
