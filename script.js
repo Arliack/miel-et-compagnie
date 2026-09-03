@@ -29,9 +29,8 @@ const els = {
   labelNomEleve: document.getElementById("label-nomEleve"),
   labelPrenomEleve: document.getElementById("label-prenomEleve"),
   champClasse: document.getElementById("champ-classe"),
-  champCommune: document.getElementById("champ-commune"),
   classeInput: document.getElementById("classe"),
-  communeInput: document.getElementById("commune"),
+  labelCommune: document.getElementById("label-commune"),
   formError: document.getElementById("form-error"),
   submitOrderBtn: document.getElementById("submit-order-btn"),
   confirmationModal: document.getElementById("confirmation-modal"),
@@ -406,11 +405,10 @@ function ouvrirCheckout() {
 function appliquerModeEleve() {
   const pasEnfant = els.pasEnfant.checked;
   els.champClasse.classList.toggle("hidden", pasEnfant);
-  els.champCommune.classList.toggle("hidden", pasEnfant);
   els.classeInput.required = !pasEnfant;
-  els.communeInput.required = !pasEnfant;
   els.labelNomEleve.textContent = pasEnfant ? "Nom *" : "Nom de famille de l'élève *";
   els.labelPrenomEleve.textContent = pasEnfant ? "Prénom *" : "Prénom de l'élève *";
+  els.labelCommune.textContent = pasEnfant ? "Commune *" : "Commune de l'élève *";
 }
 
 function fermerCheckout() {
@@ -428,7 +426,7 @@ async function validerCommande(event) {
   const classe = pasEnfant ? "" : document.getElementById("classe").value.trim();
   const telephone = document.getElementById("telephone").value.trim();
   const email = document.getElementById("email").value.trim();
-  const commune = pasEnfant ? "" : document.getElementById("commune").value.trim();
+  const commune = document.getElementById("commune").value.trim();
 
   const payload = {
     pasEnfant,
