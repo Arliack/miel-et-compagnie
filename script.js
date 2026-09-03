@@ -25,6 +25,13 @@ const els = {
   checkoutItems: document.getElementById("checkout-items"),
   checkoutTotal: document.getElementById("checkout-total"),
   checkoutForm: document.getElementById("checkout-form"),
+  pasEnfant: document.getElementById("pasEnfant"),
+  labelNomEleve: document.getElementById("label-nomEleve"),
+  labelPrenomEleve: document.getElementById("label-prenomEleve"),
+  champClasse: document.getElementById("champ-classe"),
+  champCommune: document.getElementById("champ-commune"),
+  classeInput: document.getElementById("classe"),
+  communeInput: document.getElementById("commune"),
   formError: document.getElementById("form-error"),
   submitOrderBtn: document.getElementById("submit-order-btn"),
   confirmationModal: document.getElementById("confirmation-modal"),
@@ -241,6 +248,7 @@ function bindEvents() {
   els.checkoutBtn.addEventListener("click", ouvrirCheckout);
   els.closeCheckoutBtn.addEventListener("click", fermerCheckout);
   els.checkoutForm.addEventListener("submit", validerCommande);
+  els.pasEnfant.addEventListener("change", appliquerModeEleve);
 
   els.closeConfirmationBtn.addEventListener("click", () => {
     els.confirmationModal.classList.add("hidden");
@@ -364,6 +372,16 @@ function ouvrirCheckout() {
   els.cartOverlay.classList.remove("hidden");
 }
 
+function appliquerModeEleve() {
+  const pasEnfant = els.pasEnfant.checked;
+  els.champClasse.classList.toggle("hidden", pasEnfant);
+  els.champCommune.classList.toggle("hidden", pasEnfant);
+  els.classeInput.required = !pasEnfant;
+  els.communeInput.required = !pasEnfant;
+  els.labelNomEleve.textContent = pasEnfant ? "Nom *" : "Nom de famille de l'élève *";
+  els.labelPrenomEleve.textContent = pasEnfant ? "Prénom *" : "Prénom de l'élève *";
+}
+
 function fermerCheckout() {
   els.checkoutModal.classList.add("hidden");
   els.cartOverlay.classList.add("hidden");
@@ -373,14 +391,16 @@ async function validerCommande(event) {
   event.preventDefault();
   els.formError.classList.add("hidden");
 
+  const pasEnfant = els.pasEnfant.checked;
   const nomEleve = document.getElementById("nomEleve").value.trim();
   const prenomEleve = document.getElementById("prenomEleve").value.trim();
-  const classe = document.getElementById("classe").value.trim();
+  const classe = pasEnfant ? "" : document.getElementById("classe").value.trim();
   const telephone = document.getElementById("telephone").value.trim();
   const email = document.getElementById("email").value.trim();
-  const commune = document.getElementById("commune").value.trim();
+  const commune = pasEnfant ? "" : document.getElementById("commune").value.trim();
 
   const payload = {
+    pasEnfant,
     nomEleve,
     prenomEleve,
     classe,
@@ -407,6 +427,7 @@ async function validerCommande(event) {
     sauvegarderPanier();
     majAffichagePanier();
     els.checkoutForm.reset();
+    appliquerModeEleve();
     fermerCheckout();
   } catch (err) {
     els.formError.textContent = "Une erreur est survenue : " + err.message;

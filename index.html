@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐝</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <script src="config.js?v=2"></script>
 </head>
 <body>
@@ -75,14 +75,21 @@
     </div>
 
     <form id="checkout-form" class="checkout-form">
-      <label for="nomEleve">Nom de famille de l'élève *</label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="pasEnfant" name="pasEnfant">
+        Je n'ai pas d'enfant à l'école
+      </label>
+
+      <label for="nomEleve" id="label-nomEleve">Nom de famille de l'élève *</label>
       <input type="text" id="nomEleve" name="nomEleve" required autocomplete="family-name">
 
-      <label for="prenomEleve">Prénom de l'élève *</label>
+      <label for="prenomEleve" id="label-prenomEleve">Prénom de l'élève *</label>
       <input type="text" id="prenomEleve" name="prenomEleve" required autocomplete="given-name">
 
-      <label for="classe">Classe *</label>
-      <input type="text" id="classe" name="classe" required placeholder="ex: 6A">
+      <div id="champ-classe">
+        <label for="classe">Classe *</label>
+        <input type="text" id="classe" name="classe" required placeholder="ex: 6A">
+      </div>
 
       <label for="telephone">Téléphone *</label>
       <input type="tel" id="telephone" name="telephone" required autocomplete="tel">
@@ -90,8 +97,10 @@
       <label for="email">Adresse email *</label>
       <input type="email" id="email" name="email" required autocomplete="email">
 
-      <label for="commune">Commune de l'élève *</label>
-      <input type="text" id="commune" name="commune" required autocomplete="address-level2">
+      <div id="champ-commune">
+        <label for="commune">Commune de l'élève *</label>
+        <input type="text" id="commune" name="commune" required autocomplete="address-level2">
+      </div>
 
       <p id="form-error" class="form-error hidden"></p>
 
@@ -120,6 +129,6 @@
   <p>Miel &amp; Ruches — produits proposés par deux apiculteurs partenaires du collège.</p>
 </footer>
 
-<script src="script.js?v=7"></script>
+<script src="script.js?v=8"></script>
 </body>
 </html>
