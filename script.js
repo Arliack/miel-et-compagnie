@@ -162,6 +162,22 @@ function urlImageAffichable(url) {
   return url;
 }
 
+function stockLimite(produit) {
+  return produit.stock !== null && produit.stock !== undefined;
+}
+
+function texteStock(produit) {
+  if (!stockLimite(produit)) return "";
+  const stock = produit.stock;
+  const classe = stock < 5 ? "stock-bas" : "";
+  const libelle = stock <= 0
+    ? "Rupture de stock"
+    : stock === 1
+    ? "Plus qu'1 en stock"
+    : `Plus que ${stock} en stock`;
+  return `<div class="produit-stock ${classe}">${libelle}</div>`;
+}
+
 function creerCarteProduit(produit) {
   const card = document.createElement("article");
   card.className = "produit-card";
@@ -188,6 +204,7 @@ function creerCarteProduit(produit) {
   body.innerHTML = `
     <div class="produit-nom">${escapeHtml(produit.nom)}</div>
     <div class="produit-desc">${escapeHtml(produit.description || "")}</div>
+    ${texteStock(produit)}
     <div class="produit-footer">
       <span class="produit-prix">${formaterPrix(produit.prix)}</span>
       <div class="produit-controle"></div>
@@ -210,9 +227,17 @@ function actualiserControleCarte(id) {
 
   const { produit, controle } = entree;
   const quantite = panier[id] ? panier[id].quantite : 0;
+  const enRupture = stockLimite(produit) && produit.stock <= 0;
   controle.innerHTML = "";
 
-  if (quantite === 0) {
+  if (enRupture) {
+    const btn = document.createElement("button");
+    btn.className = "btn-add";
+    btn.type = "button";
+    btn.textContent = "Rupture de stock";
+    btn.disabled = true;
+    controle.appendChild(btn);
+  } else if (quantite === 0) {
     const btn = document.createElement("button");
     btn.className = "btn-add";
     btn.type = "button";
@@ -220,12 +245,13 @@ function actualiserControleCarte(id) {
     btn.addEventListener("click", () => ajouterAuPanier(produit));
     controle.appendChild(btn);
   } else {
+    const atteintStock = stockLimite(produit) && quantite >= produit.stock;
     const wrap = document.createElement("div");
     wrap.className = "qty-control";
     wrap.innerHTML = `
       <button type="button" data-action="moins">-</button>
       <span>${quantite}</span>
-      <button type="button" data-action="plus">+</button>
+      <button type="button" data-action="plus" ${atteintStock ? "disabled" : ""}>+</button>
     `;
     wrap.querySelector('[data-action="moins"]').addEventListener("click", () => changerQuantite(id, -1));
     wrap.querySelector('[data-action="plus"]').addEventListener("click", () => changerQuantite(id, 1));
@@ -273,6 +299,7 @@ function ajouterAuPanier(produit) {
   if (!panier[produit.id]) {
     panier[produit.id] = { produit, quantite: 0 };
   }
+  if (stockLimite(produit) && panier[produit.id].quantite >= produit.stock) return;
   panier[produit.id].quantite += 1;
   sauvegarderPanier();
   majAffichagePanier();
@@ -286,7 +313,10 @@ function retirerDuPanier(id) {
 
 function changerQuantite(id, delta) {
   if (!panier[id]) return;
-  panier[id].quantite += delta;
+  const produit = panier[id].produit;
+  const nouvelleQuantite = panier[id].quantite + delta;
+  if (stockLimite(produit) && nouvelleQuantite > produit.stock) return;
+  panier[id].quantite = nouvelleQuantite;
   if (panier[id].quantite <= 0) {
     retirerDuPanier(id);
     return;
@@ -321,6 +351,7 @@ function majAffichagePanier() {
   }
 
   lignes.forEach((ligne) => {
+    const atteintStock = stockLimite(ligne.produit) && ligne.quantite >= ligne.produit.stock;
     const div = document.createElement("div");
     div.className = "cart-item";
     div.innerHTML = `
@@ -331,7 +362,7 @@ function majAffichagePanier() {
       <div class="qty-control">
         <button type="button" data-action="moins">-</button>
         <span>${ligne.quantite}</span>
-        <button type="button" data-action="plus">+</button>
+        <button type="button" data-action="plus" ${atteintStock ? "disabled" : ""}>+</button>
       </div>
     `;
     div.querySelector('[data-action="moins"]').addEventListener("click", () => changerQuantite(ligne.produit.id, -1));

@@ -220,6 +220,13 @@ main {
   line-height: 1.4;
 }
 
+.produit-stock {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--honey-deep);
+}
+.produit-stock.stock-bas { color: var(--danger); }
+
 .produit-footer {
   display: flex;
   align-items: center;
@@ -245,6 +252,12 @@ main {
 }
 .btn-add:hover { background: var(--honey-dark); color: #fff8e7; }
 .btn-add.added { background: #7a9a4a; color: #fff; }
+.btn-add:disabled {
+  background: var(--border);
+  color: var(--brown);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
 
 /* Cart panel */
 .overlay {
@@ -324,6 +337,10 @@ main {
   background: #fff;
   cursor: pointer;
   font-weight: 700;
+}
+.qty-control button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .cart-empty {
